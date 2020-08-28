@@ -1,9 +1,3 @@
-require 'nokogiri'
-require 'open-uri'
-require 'pry'
-
-require_relative './band.rb'
-
 module Top100RockBands
     class Scraper
         
@@ -14,6 +8,13 @@ module Top100RockBands
                 link = row.css('.lister-item-header a').attribute('href').value
                 soundtrack = row.css('.text-small a').text.strip
                 Top100RockBands::Band.new(index, name, soundtrack, link)
+            end
+        end
+
+        def self.get_band_bio(band) 
+            doc = Nokogiri::HTML(open("https://www.imdb.com/#{band.link}/bio"))
+            if doc.css('.soda p:first-of-type').text.strip != ""
+                band.biography = doc.css('.soda p:first-of-type').text.strip
             end
         end
     end
